@@ -1,0 +1,71 @@
+<html>
+	<head>
+		<button onclick='tableToExcel()'>导出</button>
+	</head>
+	<body>
+		<table align="center" border="1" id="testTable" onclick="testJavaScript">
+			<tr>
+				<td>1行1列</td>
+				<td>1行2列</td>
+				<td>1行3列</td>
+			</tr>
+			<tr>
+				<td>2行1列</td>
+				<td>2行2列</td>
+				<td>2行3列</td>
+			</tr>
+			<tr>
+				<td>3行1列</td>
+				<td>3行2列</td>
+				<td>3行3列</td>
+			</tr>
+			<tr>
+				<td>4行1列</td>
+				<td>4行2列</td>
+				<td>4行3列</td>
+			</tr>
+		</table>
+		<script src="jquery/jquery-1.11.3.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			function GetTable(tableID) {
+				var milasUrl = {}; //新建对象，用来存储所有数据
+				var subMilasUrlArr = {}; //存储每一行数据
+				var tableData = {};
+				$("#" + tableID + " tr").each(function(trindex, tritem) { //遍历每一行
+					tableData[trindex] = new Array();
+					$(tritem).find("td").each(function(tdindex, tditem) {
+						tableData[trindex][tdindex] = $(tditem).html(); //遍历每一个数据，并存入
+						subMilasUrlArr[trindex] = tableData[trindex]; //将每一行的数据存入
+					});
+				});
+				for (var key in subMilasUrlArr) {
+				    milasUrl[key] = subMilasUrlArr[key];//将每一行存入对象
+				}
+				return milasUrl;
+			}
+
+			function tableToExcel() {
+				//要导出的json数据，数组格式
+				var objlist=GetTable('testTable')
+				let str2=``;
+				for (let key in objlist) {
+					console.log(objlist[key])
+					objlist[key].forEach(item=>{
+						str2+=`${item + '\t'},`
+					})
+					str2 += '\n';
+				}
+				//encodeURIComponent解决中文乱码
+				let uri = 'data:text/csv;charset=utf-8,\ufeff' + encodeURIComponent(str2);
+				//通过创建a标签实现
+				var link = document.createElement("a");
+				link.href = uri;
+				//对下载的文件命名
+				link.download = "json数据表.csv";
+				document.body.appendChild(link);
+				link.click();
+				document.body.removeChild(link);
+			}
+		</script>
+	</body>
+</html>
